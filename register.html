@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — Stootap Client Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #0d0f14;
+      --surface: #13151c;
+      --panel: #1a1d26;
+      --border: #2a2d3a;
+      --gold: #c9a84c;
+      --gold-dim: rgba(201,168,76,0.15);
+      --text: #e8e6e0;
+      --muted: #6b6e7e;
+      --success: #4caf82;
+      --error: #e05a5a;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--ink);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* LEFT PANEL */
+    .left-panel {
+      background: linear-gradient(160deg, #0d0f14 0%, #111420 60%, #0a0d18 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 52px 56px;
+      border-right: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      top: -120px; left: -120px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .left-panel::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; right: -80px;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 42px; height: 42px;
+      border: 1.5px solid var(--gold);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--gold);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.5px;
+    }
+
+    .left-hero {
+      position: relative; z-index: 1;
+    }
+
+    .left-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 4vw, 52px);
+      font-weight: 300;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .left-hero h1 em {
+      font-style: normal;
+      color: var(--gold);
+    }
+
+    .left-hero p {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 360px;
+      margin-bottom: 40px;
+    }
+
+    .phase-preview {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+
+    .phase-pill {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      transition: all 0.3s;
+      animation: slideIn 0.5s ease both;
+    }
+
+    .phase-pill:nth-child(1) { animation-delay: 0.1s; }
+    .phase-pill:nth-child(2) { animation-delay: 0.2s; }
+    .phase-pill:nth-child(3) { animation-delay: 0.3s; }
+    .phase-pill:nth-child(4) { animation-delay: 0.4s; }
+    .phase-pill:nth-child(5) { animation-delay: 0.5s; }
+    .phase-pill:nth-child(6) { animation-delay: 0.6s; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-16px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .phase-pill .num {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--gold-dim);
+      border: 1px solid rgba(201,168,76,0.3);
+      font-size: 11px; font-weight: 600;
+      color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .left-footer {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .left-footer a { color: var(--gold); text-decoration: none; }
+
+    /* RIGHT PANEL */
+    .right-panel {
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 40px;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 460px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-header {
+      margin-bottom: 36px;
+    }
+
+    .form-header .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .form-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 34px; font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .form-header p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .form-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 24px 0 12px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 7px;
+      letter-spacing: 0.3px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6e7e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    .form-group select option {
+      background: var(--panel);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px var(--gold-dim);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--muted);
+      opacity: 0.6;
+    }
+
+    .input-error {
+      border-color: var(--error) !important;
+    }
+
+    .error-msg {
+      font-size: 12px;
+      color: var(--error);
+      margin-top: 5px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--gold);
+      color: var(--ink);
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn:hover {
+      background: #d4b05a;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(201,168,76,0.25);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn.loading {
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .login-link a {
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .success-state {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .success-icon {
+      width: 64px; height: 64px;
+      background: rgba(76,175,130,0.12);
+      border: 1.5px solid var(--success);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 28px;
+    }
+
+    .success-state h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .success-state p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .project-id-badge {
+      display: inline-block;
+      padding: 8px 18px;
+      background: var(--gold-dim);
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 1px;
+      margin-bottom: 28px;
+    }
+
+    .go-dashboard-btn {
+      display: inline-block;
+      padding: 12px 32px;
+      background: var(--gold);
+      color: var(--ink);
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .go-dashboard-btn:hover {
+      background: #d4b05a;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 900px) {
+      body { grid-template-columns: 1fr; }
+      .left-panel { display: none; }
+      .right-panel { min-height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LEFT -->
+<div class="left-panel">
+  <div class="brand">
+    <div class="brand-mark">S</div>
+    <span class="brand-name">Stootap</span>
+  </div>
+
+  <div class="left-hero">
+    <h1>Build your company<br>with <em>full visibility</em></h1>
+    <p>Every step of your company's creation is tracked and visible — from idea validation to launch. You'll always know what's happening.</p>
+    <div class="phase-preview">
+      <div class="phase-pill"><span class="num">1</span> Research & Concept Validation</div>
+      <div class="phase-pill"><span class="num">2</span> Minimal & Necessary Execution</div>
+      <div class="phase-pill"><span class="num">3</span> Legal & Structural Setup</div>
+      <div class="phase-pill"><span class="num">4</span> Digital Presence Development</div>
+      <div class="phase-pill"><span class="num">5</span> Operational Activation</div>
+      <div class="phase-pill"><span class="num">6</span> Launch & Operational Framework</div>
+    </div>
+  </div>
+
+  <div class="left-footer">
+    Already registered? <a href="login.html">Sign in to your dashboard →</a>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div class="right-panel">
+  <div class="form-container">
+
+    <!-- FORM STATE -->
+    <div id="formState">
+      <div class="form-header">
+        <span class="tag">Client Portal</span>
+        <h2>Create your account</h2>
+        <p>Register to begin building your company with Stootap.</p>
+      </div>
+
+      <form id="registerForm" novalidate>
+
+        <div class="form-section-label">Personal Information</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="firstName" placeholder="Rahul" />
+            <div class="error-msg" id="err-firstName"></div>
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="lastName" placeholder="Sharma" />
+            <div class="error-msg" id="err-lastName"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="email" placeholder="rahul@example.com" />
+          <div class="error-msg" id="err-email"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Min. 8 characters" />
+            <div class="error-msg" id="err-password"></div>
+          </div>
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" id="confirmPassword" placeholder="Re-enter password" />
+            <div class="error-msg" id="err-confirmPassword"></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="form-section-label">Company & Project</div>
+
+        <div class="form-group">
+          <label>Company / Project Name</label>
+          <input type="text" id="projectName" placeholder="e.g. Graamin Go" />
+          <div class="error-msg" id="err-projectName"></div>
+        </div>
+        <div class="form-group">
+          <label>Describe Your Idea</label>
+          <textarea id="ideaDescription" placeholder="Briefly describe your business concept or idea..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Development Package / Starting Phase</label>
+          <select id="startPhase">
+            <option value="">Select a phase to begin from</option>
+            <option value="1">Phase 1 – Research & Concept Validation</option>
+            <option value="2">Phase 2 – Minimal & Necessary Execution</option>
+            <option value="3">Phase 3 – Legal & Structural Setup</option>
+            <option value="4">Phase 4 – Digital Presence Development</option>
+            <option value="5">Phase 5 – Operational Activation</option>
+            <option value="6">Phase 6 – Launch & Operational Framework</option>
+          </select>
+          <div class="error-msg" id="err-startPhase"></div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          Create Account &amp; Start Project
+        </button>
+
+      </form>
+
+      <div class="login-link">
+        Already have an account? <a href="login.html">Sign in</a>
+      </div>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div class="success-state" id="successState">
+      <div class="success-icon">✓</div>
+      <h3>Account Created!</h3>
+      <p>Your project has been registered. Your unique Project ID is:</p>
+      <div class="project-id-badge" id="projectIdDisplay">STP-XX-2026</div>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:24px;">Save this ID. You'll need it to access your project.</p>
+      <a href="dashboard.html" class="go-dashboard-btn">Go to My Dashboard →</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function generateProjectId(name) {
+    const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,3);
+    const year = new Date().getFullYear();
+    return `STP-${initials}-${year}`;
+  }
+
+  function validate() {
+    let ok = true;
+    const fields = ['firstName','lastName','email','password','confirmPassword','projectName','startPhase'];
+    fields.forEach(id => {
+      document.getElementById(id).classList.remove('input-error');
+      document.getElementById('err-'+id).textContent = '';
+    });
+
+    const fv = (id, msg) => {
+      document.getElementById(id).classList.add('input-error');
+      document.getElementById('err-'+id).textContent = msg;
+      ok = false;
+    };
+
+    if (!document.getElementById('firstName').value.trim()) fv('firstName','Required');
+    if (!document.getElementById('lastName').value.trim()) fv('lastName','Required');
+
+    const email = document.getElementById('email').value.trim();
+    if (!email) fv('email','Required');
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) fv('email','Enter a valid email');
+
+    const pw = document.getElementById('password').value;
+    if (!pw) fv('password','Required');
+    else if (pw.length < 8) fv('password','Min. 8 characters');
+
+    const cpw = document.getElementById('confirmPassword').value;
+    if (!cpw) fv('confirmPassword','Required');
+    else if (cpw !== pw) fv('confirmPassword','Passwords do not match');
+
+    if (!document.getElementById('projectName').value.trim()) fv('projectName','Required');
+    if (!document.getElementById('startPhase').value) fv('startPhase','Please select a phase');
+
+    return ok;
+  }
+
+  document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const btn = document.getElementById('submitBtn');
+    btn.classList.add('loading');
+    btn.textContent = 'Creating account…';
+
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const projectName = document.getElementById('projectName').value.trim();
+    const ideaDescription = document.getElementById('ideaDescription').value.trim();
+    const startPhase = parseInt(document.getElementById('startPhase').value);
+    const projectId = generateProjectId(projectName);
+    const startDate = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+
+    const phaseNames = [
+      'Research & Concept Validation',
+      'Minimal & Necessary Execution',
+      'Legal & Structural Setup',
+      'Digital Presence Development',
+      'Operational Activation',
+      'Launch & Operational Framework'
+    ];
+
+    const defaultTasks = [
+      ['Idea validation','Market research','Initial company structure','Domain research','Concept documentation'],
+      ['Business name finalization','Preliminary logo design','Basic brand identity','Business email creation','Initial compliance preparation'],
+      ['Company registration','Legal documentation','Compliance filings','Accounting framework setup','Business identity registration'],
+      ['Website creation','Digital infrastructure setup','Email systems','Initial platform deployment'],
+      ['Process documentation','Operational systems','Initial marketing setup','Service infrastructure'],
+      ['Platform launch','Public presence activation','Operational blueprint deployment','Scaling readiness']
+    ];
+
+    const phases = phaseNames.map((name, i) => ({
+      phase_id: i + 1,
+      phase_name: name,
+      status: i + 1 < startPhase ? 'completed' : i + 1 === startPhase ? 'in-progress' : 'pending',
+      tasks: defaultTasks[i].map((t, j) => ({
+        task_id: `${i+1}-${j+1}`,
+        task_name: t,
+        status: i + 1 < startPhase ? 'completed' : 'pending',
+        last_updated: new Date().toISOString(),
+        note: ''
+      }))
+    }));
+
+    const clientData = {
+      client_id: 'CLT-' + Date.now(),
+      name: `${firstName} ${lastName}`,
+      email,
+      password_hash: btoa(password),
+      project_name: projectName,
+      idea_description: ideaDescription,
+      project_id: projectId,
+      start_date: startDate,
+      current_phase: startPhase,
+      phases
+    };
+
+    // Persist to localStorage
+    const clients = JSON.parse(localStorage.getItem('stootap_clients') || '[]');
+    clients.push(clientData);
+    localStorage.setItem('stootap_clients', JSON.stringify(clients));
+    localStorage.setItem('stootap_session', JSON.stringify({ client_id: clientData.client_id, email }));
+
+    setTimeout(() => {
+      document.getElementById('formState').style.display = 'none';
+      document.getElementById('projectIdDisplay').textContent = projectId;
+      document.getElementById('successState').style.display = 'block';
+    }, 900);
+  });
+</script>
+</body>
+</html>

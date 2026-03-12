@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — Stootap</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #0d0f14;
+      --surface: #13151c;
+      --panel: #1a1d26;
+      --card: #1e2130;
+      --border: #2a2d3a;
+      --gold: #c9a84c;
+      --gold-dim: rgba(201,168,76,0.12);
+      --text: #e8e6e0;
+      --muted: #6b6e7e;
+      --success: #4caf82;
+      --warning: #f0a050;
+      --error: #e05a5a;
+      --success-bg: rgba(76,175,130,0.1);
+      --warning-bg: rgba(240,160,80,0.1);
+      --sidebar-w: 260px;
+      --admin-accent: #7c6cf0;
+      --admin-accent-dim: rgba(124,108,240,0.12);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--ink);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 100;
+    }
+
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 10px;
+      padding: 0 24px;
+      margin-bottom: 12px;
+    }
+
+    .brand-mark {
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--gold);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; font-weight: 700;
+      color: var(--gold);
+    }
+
+    .brand-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px; font-weight: 600;
+    }
+
+    .admin-badge {
+      margin: 0 24px 28px;
+      padding: 6px 10px;
+      background: var(--admin-accent-dim);
+      border: 1px solid rgba(124,108,240,0.25);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--admin-accent);
+      text-align: center;
+    }
+
+    .sidebar-nav { padding: 0 12px; flex: 1; }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 2px;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+    .nav-item.active { background: var(--admin-accent-dim); color: var(--admin-accent); }
+    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+    .sidebar-footer {
+      padding: 16px 12px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 16px;
+    }
+
+    .back-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 40px;
+    }
+
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .topbar h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px; font-weight: 600;
+    }
+
+    .topbar p { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+    /* CLIENT SELECTOR */
+    .client-selector-bar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 24px;
+      margin-bottom: 24px;
+      display: flex; align-items: center; gap: 16px;
+    }
+
+    .client-selector-bar label {
+      font-size: 13px; color: var(--muted); font-weight: 500; white-space: nowrap;
+    }
+
+    .client-selector-bar select {
+      flex: 1;
+      padding: 10px 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6e7e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    .client-selector-bar select option { background: var(--panel); }
+    .client-selector-bar select:focus { border-color: var(--gold); }
+
+    /* CLIENT INFO STRIP */
+    .client-info-strip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--admin-accent);
+      border-radius: 12px;
+      padding: 18px 24px;
+      margin-bottom: 28px;
+      display: none;
+    }
+
+    .client-info-strip.show { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+
+    .info-item .info-label {
+      font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 3px;
+    }
+
+    .info-item .info-value { font-size: 14px; font-weight: 500; }
+    .info-item .info-value.accent { color: var(--gold); }
+
+    /* SECTIONS */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 600;
+    }
+
+    /* PHASE EDITOR */
+    .phases-editor {
+      display: flex; flex-direction: column; gap: 14px;
+      margin-bottom: 40px;
+    }
+
+    .phase-editor-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .phase-editor-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 20px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .phase-editor-header:hover { background: rgba(255,255,255,0.02); }
+
+    .phase-num-badge {
+      width: 32px; height: 32px;
+      background: var(--gold-dim);
+      border: 1.5px solid rgba(201,168,76,0.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .phase-editor-title { flex: 1; font-size: 15px; font-weight: 600; }
+
+    .phase-status-select {
+      padding: 6px 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .phase-status-select:focus { border-color: var(--gold); }
+    .phase-status-select option { background: var(--panel); }
+
+    .chevron {
+      font-size: 11px; color: var(--muted);
+      transition: transform 0.3s;
+    }
+
+    .phase-editor-card.open .chevron { transform: rotate(180deg); }
+
+    .task-editor-list {
+      display: none;
+      padding: 16px 20px;
+    }
+
+    .phase-editor-card.open .task-editor-list { display: block; }
+
+    .task-editor-row {
+      display: grid;
+      grid-template-columns: 1fr 150px auto;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      align-items: start;
+    }
+
+    .task-editor-name {
+      font-size: 14px;
+      padding-top: 8px;
+    }
+
+    .task-status-select {
+      padding: 7px 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      outline: none;
+      width: 100%;
+    }
+
+    .task-status-select:focus { border-color: var(--gold); }
+    .task-status-select option { background: var(--card); }
+
+    .note-field {
+      margin-top: 6px;
+    }
+
+    .note-input {
+      width: 100%;
+      padding: 7px 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      outline: none;
+      resize: none;
+      min-height: 36px;
+    }
+
+    .note-input:focus { border-color: var(--gold); }
+    .note-input::placeholder { color: var(--muted); opacity: 0.6; }
+
+    .save-note-btn {
+      padding: 7px 12px;
+      background: var(--gold-dim);
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 6px;
+      color: var(--gold);
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .save-note-btn:hover { background: var(--gold); color: var(--ink); }
+
+    /* SAVE ALL BUTTON */
+    .save-all-bar {
+      position: sticky;
+      bottom: 24px;
+      display: none;
+    }
+
+    .save-all-bar.show { display: flex; justify-content: flex-end; }
+
+    .save-all-btn {
+      padding: 14px 32px;
+      background: var(--gold);
+      color: var(--ink);
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 32px rgba(201,168,76,0.3);
+      transition: all 0.2s;
+    }
+
+    .save-all-btn:hover {
+      background: #d4b05a;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(201,168,76,0.4);
+    }
+
+    /* Empty state */
+    .no-clients {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .no-clients .icon { font-size: 48px; margin-bottom: 14px; }
+    .no-clients h3 { font-family: 'Cormorant Garamond', serif; font-size: 24px; margin-bottom: 8px; color: var(--text); }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px; left: 50%; transform: translateX(-50%) translateY(8px);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--success);
+      border-radius: 10px;
+      padding: 14px 24px;
+      font-size: 13px;
+      color: var(--text);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      z-index: 9999;
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">S</div>
+    <span class="brand-name">Stootap</span>
+  </div>
+  <div class="admin-badge">Admin Panel</div>
+
+  <div class="sidebar-nav">
+    <div class="nav-item active"><span class="icon">🗂️</span> Manage Projects</div>
+    <div class="nav-item" onclick="showAllClients()"><span class="icon">👥</span> All Clients</div>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="login.html" class="back-btn"><span>←</span> Back to Login</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="topbar">
+    <div>
+      <h1>Project Manager</h1>
+      <p>Update client project progress in real time</p>
+    </div>
+    <div style="font-size:13px; color:var(--muted);" id="clientCountLabel">Loading…</div>
+  </div>
+
+  <!-- CLIENT SELECTOR -->
+  <div class="client-selector-bar">
+    <label>Select Client Project</label>
+    <select id="clientSelector" onchange="loadClient()">
+      <option value="">— Choose a client —</option>
+    </select>
+  </div>
+
+  <!-- CLIENT INFO STRIP -->
+  <div class="client-info-strip" id="clientInfoStrip">
+    <div class="info-item">
+      <div class="info-label">Client Name</div>
+      <div class="info-value" id="infoName">—</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">Email</div>
+      <div class="info-value" id="infoEmail">—</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">Project ID</div>
+      <div class="info-value accent" id="infoProjectId">—</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">Started</div>
+      <div class="info-value" id="infoStartDate">—</div>
+    </div>
+  </div>
+
+  <!-- PHASES EDITOR -->
+  <div id="editorSection" style="display:none;">
+    <div class="section-header">
+      <h2>Phase & Task Editor</h2>
+      <span style="font-size:13px; color:var(--muted);">Changes auto-update the client dashboard</span>
+    </div>
+    <div class="phases-editor" id="phasesEditor"></div>
+  </div>
+
+  <!-- SAVE BAR -->
+  <div class="save-all-bar" id="saveBar">
+    <button class="save-all-btn" onclick="saveAll()">💾 Save All Changes</button>
+  </div>
+
+  <!-- NO CLIENTS -->
+  <div class="no-clients" id="noClients" style="display:none;">
+    <div class="icon">👤</div>
+    <h3>No clients registered yet</h3>
+    <p>Clients who register via <a href="register.html" style="color:var(--gold);">the registration page</a> will appear here.</p>
+  </div>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const STATUS_LABELS = { completed: '✓ Completed', 'in-progress': '⏳ In Progress', pending: '— Pending' };
+
+let currentClientId = null;
+let pendingChanges = {};
+
+function showToast(msg, color = 'var(--success)') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.borderLeftColor = color;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function getClients() {
+  return JSON.parse(localStorage.getItem('stootap_clients') || '[]');
+}
+
+function saveClients(clients) {
+  localStorage.setItem('stootap_clients', JSON.stringify(clients));
+}
+
+function init() {
+  const clients = getClients();
+  const selector = document.getElementById('clientSelector');
+  const label = document.getElementById('clientCountLabel');
+
+  selector.innerHTML = '<option value="">— Choose a client —</option>';
+
+  if (clients.length === 0) {
+    document.getElementById('noClients').style.display = 'block';
+    label.textContent = '0 clients registered';
+    return;
+  }
+
+  document.getElementById('noClients').style.display = 'none';
+  label.textContent = `${clients.length} client${clients.length > 1 ? 's' : ''} registered`;
+
+  clients.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.client_id;
+    opt.textContent = `${c.name} — ${c.project_name} (${c.project_id})`;
+    selector.appendChild(opt);
+  });
+}
+
+function loadClient() {
+  const clientId = document.getElementById('clientSelector').value;
+  currentClientId = clientId || null;
+  pendingChanges = {};
+
+  document.getElementById('saveBar').classList.remove('show');
+  document.getElementById('editorSection').style.display = 'none';
+  document.getElementById('clientInfoStrip').classList.remove('show');
+
+  if (!clientId) return;
+
+  const clients = getClients();
+  const client = clients.find(c => c.client_id === clientId);
+  if (!client) return;
+
+  // Info strip
+  document.getElementById('infoName').textContent = client.name;
+  document.getElementById('infoEmail').textContent = client.email;
+  document.getElementById('infoProjectId').textContent = client.project_id;
+  document.getElementById('infoStartDate').textContent = client.start_date;
+  document.getElementById('clientInfoStrip').classList.add('show');
+
+  // Build phase editor
+  buildPhaseEditor(client);
+  document.getElementById('editorSection').style.display = 'block';
+}
+
+function buildPhaseEditor(client) {
+  const container = document.getElementById('phasesEditor');
+  container.innerHTML = '';
+
+  client.phases.forEach(phase => {
+    const card = document.createElement('div');
+    card.className = 'phase-editor-card';
+    card.dataset.phaseId = phase.phase_id;
+
+    card.innerHTML = `
+      <div class="phase-editor-header" onclick="togglePhaseEditor(this)">
+        <div class="phase-num-badge">${phase.phase_id}</div>
+        <div class="phase-editor-title">Phase ${phase.phase_id} – ${phase.phase_name}</div>
+        <select class="phase-status-select" onclick="e=>e.stopPropagation()" onchange="onPhaseStatusChange(this, ${phase.phase_id})" data-phase-id="${phase.phase_id}">
+          <option value="pending" ${phase.status === 'pending' ? 'selected' : ''}>— Pending</option>
+          <option value="in-progress" ${phase.status === 'in-progress' ? 'selected' : ''}>⏳ In Progress</option>
+          <option value="completed" ${phase.status === 'completed' ? 'selected' : ''}>✓ Completed</option>
+        </select>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="task-editor-list" id="taskEditor-${phase.phase_id}">
+        ${phase.tasks.map(task => `
+          <div class="task-editor-row" data-task-id="${task.task_id}" data-phase-id="${phase.phase_id}">
+            <div>
+              <div class="task-editor-name">${task.task_name}</div>
+              <div class="note-field">
+                <input class="note-input" type="text" placeholder="Add a note (optional)…" value="${task.note || ''}" data-task-id="${task.task_id}" data-phase-id="${phase.phase_id}" onchange="onNoteChange(this)" />
+              </div>
+            </div>
+            <div>
+              <select class="task-status-select" data-task-id="${task.task_id}" data-phase-id="${phase.phase_id}" onchange="onTaskStatusChange(this)">
+                <option value="pending" ${task.status === 'pending' ? 'selected' : ''}>— Pending</option>
+                <option value="in-progress" ${task.status === 'in-progress' ? 'selected' : ''}>⏳ In Progress</option>
+                <option value="completed" ${task.status === 'completed' ? 'selected' : ''}>✓ Completed</option>
+              </select>
+            </div>
+            <div></div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+function togglePhaseEditor(header) {
+  const card = header.closest('.phase-editor-card');
+  card.classList.toggle('open');
+}
+
+function onPhaseStatusChange(select, phaseId) {
+  if (!pendingChanges.phases) pendingChanges.phases = {};
+  pendingChanges.phases[phaseId] = select.value;
+  showSaveBar();
+}
+
+function onTaskStatusChange(select) {
+  const phaseId = select.dataset.phaseId;
+  const taskId = select.dataset.taskId;
+  if (!pendingChanges.tasks) pendingChanges.tasks = {};
+  if (!pendingChanges.tasks[phaseId]) pendingChanges.tasks[phaseId] = {};
+  pendingChanges.tasks[phaseId][taskId] = { ...(pendingChanges.tasks[phaseId][taskId] || {}), status: select.value };
+  showSaveBar();
+}
+
+function onNoteChange(input) {
+  const phaseId = input.dataset.phaseId;
+  const taskId = input.dataset.taskId;
+  if (!pendingChanges.tasks) pendingChanges.tasks = {};
+  if (!pendingChanges.tasks[phaseId]) pendingChanges.tasks[phaseId] = {};
+  pendingChanges.tasks[phaseId][taskId] = { ...(pendingChanges.tasks[phaseId][taskId] || {}), note: input.value };
+  showSaveBar();
+}
+
+function showSaveBar() {
+  document.getElementById('saveBar').classList.add('show');
+}
+
+function saveAll() {
+  if (!currentClientId) return;
+
+  const clients = getClients();
+  const idx = clients.findIndex(c => c.client_id === currentClientId);
+  if (idx === -1) return;
+
+  const client = clients[idx];
+
+  // Apply phase status changes
+  if (pendingChanges.phases) {
+    Object.entries(pendingChanges.phases).forEach(([phaseId, status]) => {
+      const phase = client.phases.find(p => p.phase_id === parseInt(phaseId));
+      if (phase) phase.status = status;
+    });
+  }
+
+  // Apply task status/note changes
+  if (pendingChanges.tasks) {
+    Object.entries(pendingChanges.tasks).forEach(([phaseId, tasks]) => {
+      const phase = client.phases.find(p => p.phase_id === parseInt(phaseId));
+      if (!phase) return;
+      Object.entries(tasks).forEach(([taskId, changes]) => {
+        const task = phase.tasks.find(t => t.task_id === taskId);
+        if (!task) return;
+        if (changes.status !== undefined) task.status = changes.status;
+        if (changes.note !== undefined) task.note = changes.note;
+        task.last_updated = new Date().toISOString();
+      });
+    });
+  }
+
+  // Update current phase
+  const inProgressPhase = client.phases.find(p => p.status === 'in-progress');
+  if (inProgressPhase) client.current_phase = inProgressPhase.phase_id;
+
+  clients[idx] = client;
+  saveClients(clients);
+
+  pendingChanges = {};
+  document.getElementById('saveBar').classList.remove('show');
+  showToast('✅ Changes saved — client dashboard updated!');
+}
+
+function showAllClients() {
+  const clients = getClients();
+  if (clients.length === 0) {
+    showToast('No clients registered yet', 'var(--warning)');
+    return;
+  }
+  const names = clients.map(c => `• ${c.name} — ${c.project_name} [${c.project_id}]`).join('\n');
+  alert('Registered Clients:\n\n' + names);
+}
+
+// Init
+window.addEventListener('DOMContentLoaded', init);
+
+// Refresh if clients update in another tab
+window.addEventListener('storage', e => {
+  if (e.key === 'stootap_clients') init();
+});
+</script>
+</body>
+</html>

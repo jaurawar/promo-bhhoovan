@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Stootap Client Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #0d0f14;
+      --surface: #13151c;
+      --panel: #1a1d26;
+      --card: #1e2130;
+      --border: #2a2d3a;
+      --gold: #c9a84c;
+      --gold-dim: rgba(201,168,76,0.12);
+      --text: #e8e6e0;
+      --muted: #6b6e7e;
+      --success: #4caf82;
+      --success-bg: rgba(76,175,130,0.1);
+      --warning: #f0a050;
+      --warning-bg: rgba(240,160,80,0.1);
+      --pending: #3a3d4d;
+      --sidebar-w: 260px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--ink);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 100;
+    }
+
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 10px;
+      padding: 0 24px;
+      margin-bottom: 36px;
+    }
+
+    .brand-mark {
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--gold);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; font-weight: 700;
+      color: var(--gold);
+    }
+
+    .brand-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px; font-weight: 600;
+      color: var(--text);
+    }
+
+    .sidebar-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 24px;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-nav {
+      padding: 0 12px;
+      flex: 1;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 2px;
+      text-decoration: none;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+    .nav-item.active { background: var(--gold-dim); color: var(--gold); }
+    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+    .sidebar-project {
+      margin: 20px 12px 0;
+      padding: 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .sidebar-project .label {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-project .project-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px; font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .sidebar-project .project-id {
+      font-size: 12px;
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    .sidebar-footer {
+      padding: 16px 12px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 16px;
+    }
+
+    .logout-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      background: none;
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .logout-btn:hover { color: var(--error, #e05a5a); background: rgba(224,90,90,0.06); }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 40px;
+      min-height: 100vh;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 36px;
+    }
+
+    .topbar-left h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px; font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .topbar-left p {
+      font-size: 14px; color: var(--muted);
+    }
+
+    .topbar-right {
+      display: flex; align-items: center; gap: 16px;
+    }
+
+    .avatar {
+      width: 40px; height: 40px;
+      background: var(--gold-dim);
+      border: 1.5px solid rgba(201,168,76,0.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; font-weight: 700;
+      color: var(--gold);
+    }
+
+    /* PROJECT HEADER CARD */
+    .project-header-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-header-card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 300px; height: 100%;
+      background: radial-gradient(ellipse at right, rgba(201,168,76,0.05) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .project-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .project-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px; font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .meta-grid {
+      display: flex; flex-wrap: wrap; gap: 20px;
+    }
+
+    .meta-item .meta-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .meta-item .meta-value {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .meta-item .meta-value.highlight { color: var(--gold); }
+
+    .current-phase-badge {
+      background: var(--gold-dim);
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 10px;
+      padding: 16px 20px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .current-phase-badge .badge-label {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .current-phase-badge .badge-phase {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .current-phase-badge .badge-name {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* STATS ROW */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 22px;
+    }
+
+    .stat-card .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .stat-card .stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 600;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-card .stat-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .stat-card.gold .stat-value { color: var(--gold); }
+    .stat-card.green .stat-value { color: var(--success); }
+    .stat-card.orange .stat-value { color: var(--warning); }
+
+    /* SECTION HEADER */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px; font-weight: 600;
+    }
+
+    /* PHASE TRACKER */
+    .phases-grid {
+      display: flex; flex-direction: column; gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .phase-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .phase-card.completed { border-color: rgba(76,175,130,0.25); }
+    .phase-card.in-progress { border-color: rgba(201,168,76,0.35); }
+    .phase-card.active { border-color: rgba(201,168,76,0.4); }
+
+    .phase-header {
+      display: flex; align-items: center; gap: 16px;
+      padding: 18px 22px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .phase-header:hover { background: rgba(255,255,255,0.02); }
+
+    .phase-number {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .phase-number.completed { background: var(--success-bg); color: var(--success); border: 1.5px solid rgba(76,175,130,0.4); }
+    .phase-number.in-progress { background: var(--gold-dim); color: var(--gold); border: 1.5px solid rgba(201,168,76,0.4); }
+    .phase-number.pending { background: rgba(255,255,255,0.04); color: var(--muted); border: 1.5px solid var(--border); }
+
+    .phase-info { flex: 1; }
+
+    .phase-name {
+      font-size: 15px; font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .phase-task-count {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .phase-status-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .phase-status-badge.completed { background: var(--success-bg); color: var(--success); }
+    .phase-status-badge.in-progress { background: var(--gold-dim); color: var(--gold); }
+    .phase-status-badge.pending { background: rgba(255,255,255,0.04); color: var(--muted); }
+
+    .phase-chevron {
+      font-size: 12px;
+      color: var(--muted);
+      transition: transform 0.3s;
+      margin-left: 8px;
+    }
+
+    .phase-card.open .phase-chevron { transform: rotate(180deg); }
+
+    /* Progress bar inside header */
+    .phase-progress-bar {
+      height: 3px;
+      background: var(--border);
+    }
+
+    .phase-progress-fill {
+      height: 100%;
+      background: var(--success);
+      transition: width 0.6s ease;
+    }
+
+    .phase-progress-fill.in-progress { background: var(--gold); }
+
+    /* TASK LIST */
+    .task-list {
+      padding: 0 22px 18px;
+      display: none;
+    }
+
+    .phase-card.open .task-list { display: block; }
+
+    .task-list-header {
+      display: grid;
+      grid-template-columns: 1fr 140px;
+      gap: 16px;
+      padding: 10px 14px 8px;
+      font-size: 11px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .task-item {
+      display: grid;
+      grid-template-columns: 1fr 140px;
+      gap: 16px;
+      padding: 11px 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 6px;
+      align-items: center;
+      animation: taskFadeIn 0.3s ease both;
+    }
+
+    @keyframes taskFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .task-name {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px;
+    }
+
+    .task-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .task-dot.completed { background: var(--success); }
+    .task-dot.in-progress { background: var(--gold); }
+    .task-dot.pending { background: var(--border); }
+
+    .task-status {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      justify-self: start;
+    }
+
+    .task-status.completed { background: var(--success-bg); color: var(--success); }
+    .task-status.in-progress { background: var(--warning-bg); color: var(--warning); }
+    .task-status.pending { background: rgba(255,255,255,0.04); color: var(--muted); }
+
+    .task-note {
+      grid-column: 1 / -1;
+      font-size: 12px;
+      color: var(--muted);
+      padding: 6px 0 0 18px;
+      border-top: 1px solid var(--border);
+      margin-top: 6px;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-icon { font-size: 48px; margin-bottom: 16px; }
+
+    .empty-state h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; margin-bottom: 8px;
+    }
+
+    .empty-state p { font-size: 14px; color: var(--muted); }
+
+    /* Notification toast */
+    .toast {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--success);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--text);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 24px 20px; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .project-header-card { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">S</div>
+    <span class="brand-name">Stootap</span>
+  </div>
+
+  <div style="padding: 0 12px; margin-bottom: 8px;">
+    <div class="sidebar-section-label">Navigation</div>
+  </div>
+  <div class="sidebar-nav">
+    <a class="nav-item active" href="dashboard.html"><span class="icon">📊</span> Dashboard</a>
+    <a class="nav-item" href="#phases"><span class="icon">🗂️</span> Project Phases</a>
+    <a class="nav-item" href="#tasks"><span class="icon">✅</span> Task Overview</a>
+  </div>
+
+  <div class="sidebar-project" id="sidebarProject" style="display:none;">
+    <div class="label">Active Project</div>
+    <div class="project-name" id="sidebarProjectName">—</div>
+    <div class="project-id" id="sidebarProjectId">—</div>
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="logout-btn" onclick="logout()">
+      <span>🚪</span> Sign Out
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main" id="mainContent">
+
+  <!-- AUTH LOADING STATE -->
+  <div id="loadingState" style="display:flex; align-items:center; justify-content:center; min-height:60vh;">
+    <div style="text-align:center; color:var(--muted);">
+      <div style="font-size:32px; margin-bottom:12px;">⏳</div>
+      <div style="font-size:14px;">Loading dashboard…</div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD CONTENT -->
+  <div id="dashboardContent" style="display:none;">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1 id="welcomeHeading">Welcome back</h1>
+        <p id="welcomeSub">Here's the latest on your project</p>
+      </div>
+      <div class="topbar-right">
+        <div id="avatarEl" class="avatar">R</div>
+      </div>
+    </div>
+
+    <!-- PROJECT HEADER CARD -->
+    <div class="project-header-card">
+      <div>
+        <div class="project-tag">Active Project</div>
+        <div class="project-title" id="headerProjectName">—</div>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="meta-label">Client</div>
+            <div class="meta-value" id="metaClient">—</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Project ID</div>
+            <div class="meta-value highlight" id="metaProjectId">—</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Start Date</div>
+            <div class="meta-value" id="metaStartDate">—</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Est. Timeline</div>
+            <div class="meta-value">6–12 weeks</div>
+          </div>
+        </div>
+      </div>
+      <div class="current-phase-badge">
+        <div class="badge-label">Current Phase</div>
+        <div class="badge-phase" id="badgePhaseNum">—</div>
+        <div class="badge-name" id="badgePhaseName">—</div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card gold">
+        <div class="stat-label">Phases Complete</div>
+        <div class="stat-value" id="statPhasesComplete">0</div>
+        <div class="stat-sub">of 6 phases</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Tasks Completed</div>
+        <div class="stat-value" id="statTasksComplete">0</div>
+        <div class="stat-sub" id="statTasksSub">total tasks</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-label">In Progress</div>
+        <div class="stat-value" id="statInProgress">0</div>
+        <div class="stat-sub">tasks active</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Overall Progress</div>
+        <div class="stat-value" id="statProgress" style="color:var(--text);">0%</div>
+        <div class="stat-sub">completion</div>
+      </div>
+    </div>
+
+    <!-- PHASES SECTION -->
+    <div id="phases">
+      <div class="section-header">
+        <h2>Development Phases</h2>
+        <span style="font-size:13px; color:var(--muted);">Click any phase to expand</span>
+      </div>
+      <div class="phases-grid" id="phasesGrid"></div>
+    </div>
+
+  </div>
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const PHASE_NAMES = [
+  'Research & Concept Validation',
+  'Minimal & Necessary Execution',
+  'Legal & Structural Setup',
+  'Digital Presence Development',
+  'Operational Activation',
+  'Launch & Operational Framework'
+];
+
+const STATUS_ICONS = { completed: '✓', 'in-progress': '⏳', pending: '—' };
+const STATUS_LABELS = { completed: 'Completed', 'in-progress': 'In Progress', pending: 'Pending' };
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function logout() {
+  localStorage.removeItem('stootap_session');
+  window.location.href = 'login.html';
+}
+
+function getClient() {
+  const session = JSON.parse(localStorage.getItem('stootap_session') || 'null');
+  if (!session) return null;
+  const clients = JSON.parse(localStorage.getItem('stootap_clients') || '[]');
+  return clients.find(c => c.client_id === session.client_id) || null;
+}
+
+function calcStats(phases) {
+  let totalTasks = 0, completedTasks = 0, inProgressTasks = 0, completedPhases = 0;
+  phases.forEach(p => {
+    if (p.status === 'completed') completedPhases++;
+    p.tasks.forEach(t => {
+      totalTasks++;
+      if (t.status === 'completed') completedTasks++;
+      else if (t.status === 'in-progress') inProgressTasks++;
+    });
+  });
+  const pct = totalTasks ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  return { totalTasks, completedTasks, inProgressTasks, completedPhases, pct };
+}
+
+function buildPhaseCard(phase, index) {
+  const card = document.createElement('div');
+  card.className = `phase-card ${phase.status}`;
+  card.dataset.phaseId = phase.phase_id;
+
+  const completedTaskCount = phase.tasks.filter(t => t.status === 'completed').length;
+  const totalTaskCount = phase.tasks.length;
+  const fillPct = totalTaskCount ? Math.round((completedTaskCount / totalTaskCount) * 100) : 0;
+
+  card.innerHTML = `
+    <div class="phase-progress-bar">
+      <div class="phase-progress-fill ${phase.status}" style="width:${fillPct}%"></div>
+    </div>
+    <div class="phase-header" onclick="togglePhase(this)">
+      <div class="phase-number ${phase.status}">${phase.phase_id}</div>
+      <div class="phase-info">
+        <div class="phase-name">Phase ${phase.phase_id} – ${phase.phase_name}</div>
+        <div class="phase-task-count">${completedTaskCount} of ${totalTaskCount} tasks complete</div>
+      </div>
+      <div class="phase-status-badge ${phase.status}">
+        ${STATUS_ICONS[phase.status]} ${STATUS_LABELS[phase.status]}
+      </div>
+      <div class="phase-chevron">▼</div>
+    </div>
+    <div class="task-list" id="taskList-${phase.phase_id}">
+      <div class="task-list-header">
+        <span>Task</span>
+        <span>Status</span>
+      </div>
+      ${phase.tasks.map((t, i) => `
+        <div class="task-item" style="animation-delay:${i * 0.05}s">
+          <div class="task-name">
+            <div class="task-dot ${t.status}"></div>
+            ${t.task_name}
+          </div>
+          <div class="task-status ${t.status}">${STATUS_ICONS[t.status]} ${STATUS_LABELS[t.status]}</div>
+          ${t.note ? `<div class="task-note">💬 ${t.note}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  // Auto-open current phase
+  if (phase.status === 'in-progress') {
+    card.classList.add('open');
+  }
+
+  return card;
+}
+
+function togglePhase(header) {
+  const card = header.closest('.phase-card');
+  card.classList.toggle('open');
+}
+
+function renderDashboard(client) {
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('dashboardContent').style.display = 'block';
+
+  // Header
+  const firstName = client.name.split(' ')[0];
+  document.getElementById('welcomeHeading').textContent = `Welcome back, ${firstName}`;
+  document.getElementById('avatarEl').textContent = firstName[0].toUpperCase();
+
+  // Project info
+  document.getElementById('headerProjectName').textContent = client.project_name;
+  document.getElementById('metaClient').textContent = client.name;
+  document.getElementById('metaProjectId').textContent = client.project_id;
+  document.getElementById('metaStartDate').textContent = client.start_date;
+
+  const currentPhase = client.phases.find(p => p.status === 'in-progress') || client.phases[client.current_phase - 1];
+  document.getElementById('badgePhaseNum').textContent = `Phase ${currentPhase ? currentPhase.phase_id : '—'}`;
+  document.getElementById('badgePhaseName').textContent = currentPhase ? currentPhase.phase_name : '—';
+
+  // Sidebar
+  document.getElementById('sidebarProject').style.display = 'block';
+  document.getElementById('sidebarProjectName').textContent = client.project_name;
+  document.getElementById('sidebarProjectId').textContent = client.project_id;
+
+  // Stats
+  const s = calcStats(client.phases);
+  document.getElementById('statPhasesComplete').textContent = s.completedPhases;
+  document.getElementById('statTasksComplete').textContent = s.completedTasks;
+  document.getElementById('statTasksSub').textContent = `of ${s.totalTasks} total`;
+  document.getElementById('statInProgress').textContent = s.inProgressTasks;
+  document.getElementById('statProgress').textContent = s.pct + '%';
+
+  // Phases
+  const grid = document.getElementById('phasesGrid');
+  grid.innerHTML = '';
+  client.phases.forEach((phase, i) => {
+    grid.appendChild(buildPhaseCard(phase, i));
+  });
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  const client = getClient();
+  if (!client) {
+    window.location.href = 'login.html';
+    return;
+  }
+  renderDashboard(client);
+
+  // Listen for admin updates
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'stootap_clients') {
+      const updatedClient = getClient();
+      if (updatedClient) {
+        renderDashboard(updatedClient);
+        showToast('✨ Your project was just updated by the Stootap team');
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>
